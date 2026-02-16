@@ -1,0 +1,34 @@
+@startuml Swift Order Architecture
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_TOP_DOWN()
+LAYOUT_WITH_LEGEND()
+title Swift Order — Container Diagram
+
+Person(customer, "Заказчик", "Оформляет заказы на вырезку деталей, загружает файлы для резки")
+Person(operator, "Оператор ЧПУ", "Берёт заказы в работу, скачивает файлы, обновляет статусы")
+Person(admin, "Владелец производства", "Контролирует загрузку станков, управляет клиентами")
+
+Container(gateway, "API Gateway", "Nginx / Spring Cloud Gateway", "Маршрутизация, аутентификация, rate limiting")
+
+System_Boundary(backend, "Swift Order Backend") {
+    Container(api, "Backend", "Kotlin, Spring Boot", "REST API: CRUD клиентов и заказов, управление жизненным циклом")
+    Container(notify, "Notification Service", "Kotlin, Spring Boot", "Kafka-consumer: отправка уведомлений клиентам")
+}
+
+System_Boundary(infra, "Infrastructure") {
+    ContainerDb(db, "PostgreSQL", "RDBMS", "Хранение клиентов, заказов, файлов для резки")
+    ContainerQueue(kafka, "Apache Kafka", "Message Broker", "События смены статуса заказов")
+}
+
+Rel_Down(customer, gateway, "HTTP/HTTPS", "Создание заказов, загрузка файлов, просмотр статусов")
+Rel_Down(operator, gateway, "HTTP/HTTPS", "Просмотр заказов, скачивание файлов, смена статусов")
+Rel_Down(admin, gateway, "HTTP/HTTPS", "Управление клиентами, контроль заказов")
+
+Rel_Down(gateway, api, "HTTP", "Проксирование запросов")
+Rel_Down(api, db, "JDBC", "Чтение/запись данных")
+Rel_Down(api, kafka, "Produce", "Публикация событий смены статуса")
+Rel_Right(kafka, notify, "Consume", "Потребление событий")
+Rel_Up(notify, customer, "Email / Push", "Уведомления о смене статуса")
+
+@enduml
