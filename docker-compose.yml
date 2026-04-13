@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  elasticsearch:
+    image: elasticsearch:7.17.24
+    container_name: swift-order-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - elk
+
+  logstash:
+    image: logstash:7.17.24
+    container_name: swift-order-logstash
+    ports:
+      - "5044:5044"
+      - "5000:5000/tcp"
+      - "5000:5000/udp"
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    environment:
+      - LS_JAVA_OPTS=-Xms256m -Xmx256m
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk
+
+  kibana:
+    image: kibana:7.17.24
+    container_name: swift-order-kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk
+
+volumes:
+  elasticsearch-data:
+
+networks:
+  elk:
+    driver: bridge

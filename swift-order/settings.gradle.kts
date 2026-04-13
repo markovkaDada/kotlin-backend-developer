@@ -9,4 +9,4 @@ pluginManagement {
 
 rootProject.name = "swift-order"
 
-include("swift-order-api")
+include("app")
