@@ -10,3 +10,6 @@ pluginManagement {
 rootProject.name = "swift-order"
 
 include("app")
+include("api-v1")
+include("common")
+include("mappers")

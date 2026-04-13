@@ -1,0 +1,383 @@
+openapi: "3.0.3"
+info:
+  title: Swift Order API
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8080/v1
+tags:
+  - name: order
+    description: Заказ на лазерную резку
+paths:
+  /order/create:
+    post:
+      tags:
+        - order
+      summary: Create order
+      operationId: orderCreate
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreateRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderCreateResponse'
+  /order/read:
+    post:
+      tags:
+        - order
+      summary: Read order
+      operationId: orderRead
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderReadRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderReadResponse'
+  /order/update:
+    post:
+      tags:
+        - order
+      summary: Update order
+      operationId: orderUpdate
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderUpdateRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderUpdateResponse'
+  /order/delete:
+    post:
+      tags:
+        - order
+      summary: Delete order
+      operationId: orderDelete
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderDeleteRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDeleteResponse'
+  /order/search:
+    post:
+      tags:
+        - order
+      summary: Search orders
+      operationId: orderSearch
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderSearchRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderSearchResponse'
+
+components:
+  schemas:
+
+    IRequest:
+      type: object
+      description: Базовый интерфейс для всех запросов
+      properties:
+        requestType:
+          type: string
+          description: Поле-дискриминатор для вычисления типа запроса
+          example: create
+      discriminator:
+        propertyName: requestType
+        mapping:
+          create: '#/components/schemas/OrderCreateRequest'
+          read:   '#/components/schemas/OrderReadRequest'
+          update: '#/components/schemas/OrderUpdateRequest'
+          delete: '#/components/schemas/OrderDeleteRequest'
+          search: '#/components/schemas/OrderSearchRequest'
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        group:
+          type: string
+        field:
+          type: string
+        message:
+          type: string
+
+    ResponseResult:
+      type: string
+      enum:
+        - success
+        - error
+
+    IResponse:
+      type: object
+      description: Базовый интерфейс для всех ответов
+      properties:
+        responseType:
+          type: string
+          description: Поле-дискриминатор для вычисления типа ответа
+          example: create
+        result:
+          $ref: '#/components/schemas/ResponseResult'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error'
+      discriminator:
+        propertyName: responseType
+        mapping:
+          create: '#/components/schemas/OrderCreateResponse'
+          read:   '#/components/schemas/OrderReadResponse'
+          update: '#/components/schemas/OrderUpdateResponse'
+          delete: '#/components/schemas/OrderDeleteResponse'
+          search: '#/components/schemas/OrderSearchResponse'
+          init:   '#/components/schemas/OrderInitResponse'
+
+    OrderStatusDto:
+      type: string
+      enum:
+        - NEW
+        - CONFIRMED
+        - IN_PROGRESS
+        - COMPLETED
+        - CANCELLED
+
+    OrderId:
+      type: string
+      description: Идентификатор заказа
+
+    BaseOrder:
+      type: object
+      description: Общие поля заказа для create и update
+      required:
+        - description
+        - amount
+        - ownerId
+        - fileId
+      properties:
+        description:
+          type: string
+        amount:
+          type: string
+          format: decimal
+        ownerId:
+          type: string
+        fileId:
+          type: string
+
+    OrderResponseObject:
+      required:
+        - id
+        - status
+      allOf:
+        - $ref: '#/components/schemas/BaseOrder'
+        - type: object
+          description: Объект заказа, возвращаемый в ответе
+          properties:
+            id:
+              $ref: '#/components/schemas/OrderId'
+            status:
+              $ref: '#/components/schemas/OrderStatusDto'
+
+    OrderResponseSingle:
+      allOf:
+        - type: object
+          description: Ответ с одним заказом
+          properties:
+            order:
+              $ref: '#/components/schemas/OrderResponseObject'
+
+    OrderResponseMulti:
+      allOf:
+        - type: object
+          description: Ответ со списком заказов
+          properties:
+            orders:
+              type: array
+              items:
+                $ref: '#/components/schemas/OrderResponseObject'
+
+    OrderCreateObject:
+      allOf:
+        - $ref: '#/components/schemas/BaseOrder'
+
+    OrderCreateRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/OrderRequestDebug'
+        - type: object
+          properties:
+            order:
+              $ref: '#/components/schemas/OrderCreateObject'
+
+    OrderReadObject:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/OrderId'
+
+    OrderReadRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/OrderRequestDebug'
+        - type: object
+          properties:
+            order:
+              $ref: '#/components/schemas/OrderReadObject'
+
+    OrderUpdateObject:
+      required:
+        - id
+        - status
+      allOf:
+        - $ref: '#/components/schemas/BaseOrder'
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/OrderId'
+            status:
+              $ref: '#/components/schemas/OrderStatusDto'
+
+    OrderUpdateRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/OrderRequestDebug'
+        - type: object
+          properties:
+            order:
+              $ref: '#/components/schemas/OrderUpdateObject'
+
+    OrderDeleteObject:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/OrderId'
+
+    OrderDeleteRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/OrderRequestDebug'
+        - type: object
+          properties:
+            order:
+              $ref: '#/components/schemas/OrderDeleteObject'
+
+    OrderSearchFilter:
+      type: object
+      description: Фильтр поиска заказов
+      properties:
+        status:
+          $ref: '#/components/schemas/OrderStatusDto'
+
+    OrderSearchRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/OrderRequestDebug'
+        - type: object
+          properties:
+            orderFilter:
+              $ref: '#/components/schemas/OrderSearchFilter'
+
+    OrderInitResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+
+    OrderCreateResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/OrderResponseSingle'
+
+    OrderReadResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/OrderResponseSingle'
+
+    OrderUpdateResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/OrderResponseSingle'
+
+    OrderDeleteResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/OrderResponseSingle'
+
+    OrderSearchResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/OrderResponseMulti'
+
+    # STUBS ======================
+    OrderRequestDebugMode:
+      type: string
+      enum:
+        - prod
+        - test
+        - stub
+
+    OrderRequestDebug:
+      type: object
+      properties:
+        debug:
+          $ref: '#/components/schemas/OrderDebug'
+
+    OrderDebug:
+      type: object
+      properties:
+        mode:
+          $ref: '#/components/schemas/OrderRequestDebugMode'
+        stub:
+          $ref: '#/components/schemas/OrderRequestDebugStubs'
+
+    OrderRequestDebugStubs:
+      type: string
+      description: Перечисления всех стабов
+      enum:
+        - success
+        - notFound
+        - badId
+        - badDescription
+        - badAmount
+        - badStatus
+        - cannotDelete
+        - badSearchString
