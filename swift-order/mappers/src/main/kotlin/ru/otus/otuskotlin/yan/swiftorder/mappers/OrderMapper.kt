@@ -1,18 +1,14 @@
 package ru.otus.otuskotlin.yan.swiftorder.mappers
 
 import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderCreateRequest
-import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderCreateResponse
-import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderDeleteResponse
-import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderReadResponse
 import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderResponseObject
 import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderStatusDto
 import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderUpdateRequest
-import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderUpdateResponse
-import ru.otus.otuskotlin.yan.swiftorder.common.models.SwiftFileId
-import ru.otus.otuskotlin.yan.swiftorder.common.models.SwiftOrder
-import ru.otus.otuskotlin.yan.swiftorder.common.models.SwiftOrderId
-import ru.otus.otuskotlin.yan.swiftorder.common.models.SwiftOrderStatus
-import ru.otus.otuskotlin.yan.swiftorder.common.models.SwiftOwnerId
+import ru.otus.otuskotlin.yan.swiftorder.models.SwiftFileId
+import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrder
+import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrderId
+import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrderStatus
+import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOwnerId
 import java.util.UUID
 
 // ---- Transport → Internal ----
@@ -58,14 +54,6 @@ fun OrderStatusDto.toInternal(): SwiftOrderStatus = when (this) {
 
 // ---- Internal → Transport ----
 
-fun SwiftOrder.toTransportCreate(): OrderCreateResponse = OrderCreateResponse(order = toResponseObject())
-
-fun SwiftOrder.toTransportRead(): OrderReadResponse = OrderReadResponse(order = toResponseObject())
-
-fun SwiftOrder.toTransportUpdate(): OrderUpdateResponse = OrderUpdateResponse(order = toResponseObject())
-
-fun SwiftOrder.toTransportDelete(): OrderDeleteResponse = OrderDeleteResponse(order = toResponseObject())
-
 fun SwiftOrderStatus.toTransport(): OrderStatusDto = when (this) {
     SwiftOrderStatus.NEW -> OrderStatusDto.NEW
     SwiftOrderStatus.CONFIRMED -> OrderStatusDto.CONFIRMED
@@ -74,7 +62,7 @@ fun SwiftOrderStatus.toTransport(): OrderStatusDto = when (this) {
     SwiftOrderStatus.CANCELLED -> OrderStatusDto.CANCELLED
 }
 
-private fun SwiftOrder.toResponseObject(): OrderResponseObject = OrderResponseObject(
+fun SwiftOrder.toResponseObject(): OrderResponseObject = OrderResponseObject(
     id = id.asString,
     description = description,
     amount = amount,

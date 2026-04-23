@@ -36,3 +36,6 @@ docker run --network kotlin-backend-developer_elk -p 8080:8080 swift-order:lates
 | Elasticsearch  | 9200  |
 | Logstash       | 5000  |
 | Kibana         | 5601  |
+
+
+./gradlew :swift-order:app-spring:bootJar && cd swift-order/docker && docker-compose up --build

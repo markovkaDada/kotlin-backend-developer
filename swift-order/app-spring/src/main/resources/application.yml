@@ -1,0 +1,62 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: swift-order
+  kafka:
+    bootstrap-servers: localhost:29092
+app:
+  kafka:
+    enabled: true
+    consumer:
+      group-id: swift-order-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+swift-order:
+  create-topics: true
+  create-request-topic:
+    name: swift-order-create-request
+    partitions: 1
+    replication-factor: 1
+  create-response-topic:
+    name: swift-order-create-response
+    partitions: 1
+    replication-factor: 1
+  read-request-topic:
+    name: swift-order-read-request
+    partitions: 1
+    replication-factor: 1
+  read-response-topic:
+    name: swift-order-read-response
+    partitions: 1
+    replication-factor: 1
+  update-request-topic:
+    name: swift-order-update-request
+    partitions: 1
+    replication-factor: 1
+  update-response-topic:
+    name: swift-order-update-response
+    partitions: 1
+    replication-factor: 1
+  delete-request-topic:
+    name: swift-order-delete-request
+    partitions: 1
+    replication-factor: 1
+  delete-response-topic:
+    name: swift-order-delete-response
+    partitions: 1
+    replication-factor: 1
+  search-request-topic:
+    name: swift-order-search-request
+    partitions: 1
+    replication-factor: 1
+  search-response-topic:
+    name: swift-order-search-response
+    partitions: 1
+    replication-factor: 1
