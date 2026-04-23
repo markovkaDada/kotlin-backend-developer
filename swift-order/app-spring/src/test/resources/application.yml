@@ -1,0 +1,10 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:29092
+
+swift-order:
+  create-topics: false
+
+app:
+  kafka:
+    enabled: false

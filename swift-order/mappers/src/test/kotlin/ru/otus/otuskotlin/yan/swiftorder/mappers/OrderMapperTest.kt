@@ -5,17 +5,16 @@ import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderCreateRequest
 import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderStatusDto
 import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderUpdateObject
 import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderUpdateRequest
-import ru.otus.otuskotlin.yan.swiftorder.common.models.SwiftFileId
-import ru.otus.otuskotlin.yan.swiftorder.common.models.SwiftOrder
-import ru.otus.otuskotlin.yan.swiftorder.common.models.SwiftOrderId
-import ru.otus.otuskotlin.yan.swiftorder.common.models.SwiftOrderStatus
-import ru.otus.otuskotlin.yan.swiftorder.common.models.SwiftOwnerId
+import ru.otus.otuskotlin.yan.swiftorder.models.SwiftFileId
+import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrder
+import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrderId
+import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrderStatus
+import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOwnerId
 import java.math.BigDecimal
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 class OrderMapperTest {
 
@@ -29,9 +28,7 @@ class OrderMapperTest {
                 fileId = "detail.dxf",
             ),
         )
-
         val result = request.toInternal()
-
         assertNotNull(result.id)
         assertEquals("Cut steel 5mm", result.description)
         assertEquals(BigDecimal(1500.0), result.amount)
@@ -42,9 +39,7 @@ class OrderMapperTest {
 
     @Test
     fun `OrderCreateRequest with null order throws`() {
-        assertFailsWith<IllegalArgumentException> {
-            OrderCreateRequest(order = null).toInternal()
-        }
+        assertFailsWith<IllegalArgumentException> { OrderCreateRequest(order = null).toInternal() }
     }
 
     @Test
@@ -86,9 +81,7 @@ class OrderMapperTest {
                 fileId = "detail.dxf",
             ),
         )
-
         val result = request.toInternal()
-
         assertEquals("order-1", result.id.asString)
         assertEquals("Updated description", result.description)
         assertEquals(BigDecimal(100.0), result.amount)
@@ -125,7 +118,7 @@ class OrderMapperTest {
     }
 
     @Test
-    fun `SwiftOrder toTransportCreate maps all fields`() {
+    fun `SwiftOrder toResponseObject maps all fields`() {
         val order = SwiftOrder(
             id = SwiftOrderId("order-1"),
             description = "Cut steel 5mm",
@@ -134,10 +127,7 @@ class OrderMapperTest {
             ownerId = SwiftOwnerId("owner-1"),
             fileId = SwiftFileId("detail.dxf"),
         )
-
-        val response = order.toTransportCreate()
-        val obj = response.order!!
-
+        val obj = order.toResponseObject()
         assertEquals("order-1", obj.id)
         assertEquals("Cut steel 5mm", obj.description)
         assertEquals(BigDecimal(100.0), obj.amount)
@@ -147,7 +137,7 @@ class OrderMapperTest {
     }
 
     @Test
-    fun `SwiftOrder toTransportRead maps all fields`() {
+    fun `SwiftOrder toResponseObject maps status COMPLETED`() {
         val order = SwiftOrder(
             id = SwiftOrderId("order-2"),
             description = "Cut aluminium 3mm",
@@ -156,40 +146,30 @@ class OrderMapperTest {
             ownerId = SwiftOwnerId("owner-2"),
             fileId = SwiftFileId("part.dxf"),
         )
-
-        val response = order.toTransportRead()
-        val obj = response.order!!
-
+        val obj = order.toResponseObject()
         assertEquals("order-2", obj.id)
         assertEquals("Cut aluminium 3mm", obj.description)
-        assertEquals(BigDecimal(100.0), obj.amount)
         assertEquals(OrderStatusDto.COMPLETED, obj.status)
-        assertEquals("owner-2", obj.ownerId)
-        assertEquals("part.dxf", obj.fileId)
     }
 
     @Test
-    fun `SwiftOrder toTransportUpdate maps all fields`() {
+    fun `SwiftOrder toResponseObject maps status IN_PROGRESS`() {
         val order = SwiftOrder(
             id = SwiftOrderId("order-3"),
             description = "Cut copper 2mm",
             amount = BigDecimal(100.0),
             status = SwiftOrderStatus.IN_PROGRESS,
-            ownerId = SwiftOwnerId("owner-3"),
+            ownerId = SwiftOwnerId("order-3"),
             fileId = SwiftFileId("copper.dxf"),
         )
-
-        val response = order.toTransportUpdate()
-        val obj = response.order!!
-
+        val obj = order.toResponseObject()
         assertEquals("order-3", obj.id)
         assertEquals("Cut copper 2mm", obj.description)
-        assertEquals(BigDecimal(100.0), obj.amount)
         assertEquals(OrderStatusDto.IN_PROGRESS, obj.status)
     }
 
     @Test
-    fun `SwiftOrder toTransportDelete maps id via order object`() {
+    fun `SwiftOrder toResponseObject maps id for delete`() {
         val order = SwiftOrder(
             id = SwiftOrderId("order-4"),
             description = "desc",
@@ -198,9 +178,18 @@ class OrderMapperTest {
             ownerId = SwiftOwnerId("owner-1"),
             fileId = SwiftFileId("file.dxf"),
         )
+        assertEquals("order-4", order.toResponseObject().id)
+    }
 
-        val response = order.toTransportDelete()
-
-        assertEquals("order-4", response.order?.id)
+    @Test
+    fun `List of SwiftOrder toResponseObject maps all orders`() {
+        val orders = listOf(
+            SwiftOrder(id = SwiftOrderId("s-1"), description = "Order 1", amount = BigDecimal(100.0), status = SwiftOrderStatus.NEW, ownerId = SwiftOwnerId("o-1"), fileId = SwiftFileId("f-1")),
+            SwiftOrder(id = SwiftOrderId("s-2"), description = "Order 2", amount = BigDecimal(200.0), status = SwiftOrderStatus.CONFIRMED, ownerId = SwiftOwnerId("o-2"), fileId = SwiftFileId("f-2")),
+        )
+        val result = orders.map { it.toResponseObject() }
+        assertEquals(2, result.size)
+        assertEquals("s-1", result[0].id)
+        assertEquals("s-2", result[1].id)
     }
 }

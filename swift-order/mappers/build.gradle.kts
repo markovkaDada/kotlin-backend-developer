@@ -4,5 +4,5 @@ plugins {
 
 dependencies {
     implementation(project(":api-v1"))
-    implementation(project(":common"))
+    implementation(project(":models"))
 }
