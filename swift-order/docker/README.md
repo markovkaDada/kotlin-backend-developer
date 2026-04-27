@@ -1,41 +1,43 @@
 # Docker — Swift Order
 
-## Сборка образа
+## Запуск всего стека
 
-Команду нужно запускать из корня проекта `kotlin-backend-developer/`:
-
-```bash
-docker build -f swift-order/docker/Dockerfile -t swift-order:latest ./swift-order
-```
-
-## Запуск контейнера
+Из корня проекта `kotlin-backend-developer/`:
 
 ```bash
-docker run -p 8080:8080 swift-order:latest
+./gradlew :swift-order:app-spring:bootJar :swift-order:app-ui:installDist \
+  && cd swift-order/docker \
+  && docker-compose up --build
 ```
 
-## Запуск с ELK Stack
-
-Сначала поднимите инфраструктуру из корня проекта:
-
-```bash
-docker-compose up -d
-```
-
-Затем запустите приложение:
-
-```bash
-docker run --network kotlin-backend-developer_elk -p 8080:8080 swift-order:latest
-```
+Это соберёт JAR Spring Boot и дистрибутив Ktor UI, затем поднимет все сервисы.
 
 ## Порты
 
-| Сервис         | Порт  |
-|----------------|-------|
-| Swift Order    | 8080  |
-| Elasticsearch  | 9200  |
-| Logstash       | 5000  |
-| Kibana         | 5601  |
+| Сервис              | Порт | URL                          |
+|---------------------|------|------------------------------|
+| Swift Order Spring  | 8080 | http://localhost:8080        |
+| **Swift Order UI**  | **8081** | **http://localhost:8081/orders** |
+| Kafka               | 9092 | localhost:9092               |
+| ZooKeeper           | 2181 | localhost:2181               |
+
+Откройте **http://localhost:8081/orders** в браузере.  
+В шапке переключайтесь между транспортами **HTTP** и **Kafka**.
+
+## Сборка отдельных образов
+
+Команды запускать из корня `kotlin-backend-developer/`:
+
+```bash
+# Spring Boot
+docker build -f swift-order/docker/Dockerfile -t swift-order:latest ./swift-order
+
+# Ktor UI
+./gradlew :swift-order:app-ui:installDist
+docker build -f swift-order/docker/Dockerfile.ui -t swift-order-ui:latest ./swift-order
+```
 
 
-./gradlew :swift-order:app-spring:bootJar && cd swift-order/docker && docker-compose up --build
+./gradlew :swift-order:app-spring:bootJar :swift-order:app-ui:installDist \   
+&& cd swift-order/docker \                                                  
+&& docker-compose up --build

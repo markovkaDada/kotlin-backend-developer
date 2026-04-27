@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.context.annotation.Bean
@@ -25,10 +24,6 @@ const val ORDER_CONSUMER_CONTAINER_FACTORY = "orderConsumerContainerFactory"
 
 @Configuration
 class KafkaTopicsConfig {
-
-    @Bean
-    @ConditionalOnMissingBean
-    fun appSettings() = AppSettings()
 
     @Bean
     fun swiftOrderTopicsProperties() = SwiftOrderTopicsProperties()

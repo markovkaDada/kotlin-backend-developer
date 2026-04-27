@@ -9,40 +9,28 @@ import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrder
 import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrderId
 import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrderStatus
 import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOwnerId
+import java.math.BigDecimal
 import java.util.UUID
 
 // ---- Transport → Internal ----
 
-fun OrderCreateRequest.toInternal(): SwiftOrder {
-    val o = requireNotNull(order) { "order must not be null" }
-    require(o.description.isNotBlank()) { "description must not be blank" }
-    require(o.ownerId.isNotBlank()) { "ownerId must not be blank" }
-    require(o.fileId.isNotBlank()) { "fileId must not be blank" }
-    return SwiftOrder(
-        id = SwiftOrderId(UUID.randomUUID().toString()),
-        description = o.description,
-        amount = o.amount,
-        status = SwiftOrderStatus.NEW,
-        ownerId = SwiftOwnerId(o.ownerId),
-        fileId = SwiftFileId(o.fileId),
-    )
-}
+fun OrderCreateRequest.toInternal(): SwiftOrder = SwiftOrder(
+    id = SwiftOrderId(UUID.randomUUID().toString()),
+    description = order?.description ?: "",
+    amount = order?.amount ?: BigDecimal.ZERO,
+    status = SwiftOrderStatus.NEW,
+    ownerId = SwiftOwnerId(order?.ownerId ?: ""),
+    fileId = SwiftFileId(order?.fileId ?: ""),
+)
 
-fun OrderUpdateRequest.toInternal(): SwiftOrder {
-    val o = requireNotNull(order) { "order must not be null" }
-    require(o.id.isNotBlank()) { "id must not be blank" }
-    require(o.description.isNotBlank()) { "description must not be blank" }
-    require(o.ownerId.isNotBlank()) { "ownerId must not be blank" }
-    require(o.fileId.isNotBlank()) { "fileId must not be blank" }
-    return SwiftOrder(
-        id = SwiftOrderId(o.id),
-        description = o.description,
-        amount = o.amount,
-        status = o.status.toInternal(),
-        ownerId = SwiftOwnerId(o.ownerId),
-        fileId = SwiftFileId(o.fileId),
-    )
-}
+fun OrderUpdateRequest.toInternal(): SwiftOrder = SwiftOrder(
+    id = SwiftOrderId(order?.id ?: ""),
+    description = order?.description ?: "",
+    amount = order?.amount ?: BigDecimal.ZERO,
+    status = order?.status?.toInternal() ?: SwiftOrderStatus.NEW,
+    ownerId = SwiftOwnerId(order?.ownerId ?: ""),
+    fileId = SwiftFileId(order?.fileId ?: ""),
+)
 
 fun OrderStatusDto.toInternal(): SwiftOrderStatus = when (this) {
     OrderStatusDto.NEW -> SwiftOrderStatus.NEW

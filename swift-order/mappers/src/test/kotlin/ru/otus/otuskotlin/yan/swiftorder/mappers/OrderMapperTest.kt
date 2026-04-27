@@ -13,7 +13,6 @@ import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOwnerId
 import java.math.BigDecimal
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 
 class OrderMapperTest {
@@ -38,38 +37,6 @@ class OrderMapperTest {
     }
 
     @Test
-    fun `OrderCreateRequest with null order throws`() {
-        assertFailsWith<IllegalArgumentException> { OrderCreateRequest(order = null).toInternal() }
-    }
-
-    @Test
-    fun `OrderCreateRequest with blank description throws`() {
-        assertFailsWith<IllegalArgumentException> {
-            OrderCreateRequest(
-                order = OrderCreateObject(description = " ", amount = BigDecimal(100.0), ownerId = "owner-1", fileId = "file.dxf")
-            ).toInternal()
-        }
-    }
-
-    @Test
-    fun `OrderCreateRequest with blank ownerId throws`() {
-        assertFailsWith<IllegalArgumentException> {
-            OrderCreateRequest(
-                order = OrderCreateObject(description = "desc", amount = BigDecimal(100.0), ownerId = "", fileId = "file.dxf")
-            ).toInternal()
-        }
-    }
-
-    @Test
-    fun `OrderCreateRequest with blank fileId throws`() {
-        assertFailsWith<IllegalArgumentException> {
-            OrderCreateRequest(
-                order = OrderCreateObject(description = "desc", amount = BigDecimal(100.0), ownerId = "owner-1", fileId = "")
-            ).toInternal()
-        }
-    }
-
-    @Test
     fun `OrderUpdateRequest toInternal maps all fields`() {
         val request = OrderUpdateRequest(
             order = OrderUpdateObject(
@@ -88,15 +55,6 @@ class OrderMapperTest {
         assertEquals(SwiftOrderStatus.CONFIRMED, result.status)
         assertEquals("owner-1", result.ownerId.asString)
         assertEquals("detail.dxf", result.fileId.asString)
-    }
-
-    @Test
-    fun `OrderUpdateRequest with blank id throws`() {
-        assertFailsWith<IllegalArgumentException> {
-            OrderUpdateRequest(
-                order = OrderUpdateObject(id = "", description = "desc", amount = BigDecimal(100.0), status = OrderStatusDto.NEW, ownerId = "owner-1", fileId = "file.dxf")
-            ).toInternal()
-        }
     }
 
     @Test

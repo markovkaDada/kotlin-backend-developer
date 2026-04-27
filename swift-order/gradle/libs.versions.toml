@@ -1,0 +1,51 @@
+[versions]
+spring-boot                = "3.5.0"
+spring-dependency-management = "1.1.6"
+kotlinx-coroutines         = "1.10.2"
+kotlinx-datetime           = "0.6.2"
+jackson                    = "2.21.2"
+slf4j                      = "2.0.16"
+mockito-kotlin             = "5.4.0"
+openapi-generator          = "7.7.0"
+ktor                          = "2.3.12"
+kafka-clients                 = "3.7.1"
+
+[libraries]
+# Kotlin extensions
+kotlinx-coroutines-core    = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core",    version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-reactor = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactor", version.ref = "kotlinx-coroutines" }
+kotlinx-datetime           = { module = "org.jetbrains.kotlinx:kotlinx-datetime",           version.ref = "kotlinx-datetime" }
+
+# Jackson
+jackson-module-kotlin      = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+
+# Logging
+slf4j-api                  = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+
+# Spring Boot BOM (for platform import in library modules)
+spring-boot-bom            = { module = "org.springframework.boot:spring-boot-dependencies",  version.ref = "spring-boot" }
+spring-boot-starter-web    = { module = "org.springframework.boot:spring-boot-starter-web" }
+spring-boot-starter-test   = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-boot-autoconfigure  = { module = "org.springframework.boot:spring-boot-autoconfigure" }
+spring-kafka               = { module = "org.springframework.kafka:spring-kafka" }
+spring-kafka-test          = { module = "org.springframework.kafka:spring-kafka-test" }
+
+# Ktor
+ktor-server-core              = { module = "io.ktor:ktor-server-core",                   version.ref = "ktor" }
+ktor-server-netty             = { module = "io.ktor:ktor-server-netty",                  version.ref = "ktor" }
+ktor-server-html-builder      = { module = "io.ktor:ktor-server-html-builder",           version.ref = "ktor" }
+ktor-client-core              = { module = "io.ktor:ktor-client-core",                   version.ref = "ktor" }
+ktor-client-cio               = { module = "io.ktor:ktor-client-cio",                    version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-jackson    = { module = "io.ktor:ktor-serialization-jackson",         version.ref = "ktor" }
+ktor-server-test-host         = { module = "io.ktor:ktor-server-test-host",              version.ref = "ktor" }
+ktor-client-mock              = { module = "io.ktor:ktor-client-mock",                   version.ref = "ktor" }
+kafka-clients                 = { module = "org.apache.kafka:kafka-clients",             version.ref = "kafka-clients" }
+
+# Test
+mockito-kotlin             = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito-kotlin" }
+
+[plugins]
+spring-boot                  = { id = "org.springframework.boot",        version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }
+openapi-generator            = { id = "org.openapi.generator",           version.ref = "openapi-generator" }
