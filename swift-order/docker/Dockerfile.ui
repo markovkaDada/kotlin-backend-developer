@@ -1,0 +1,11 @@
+FROM eclipse-temurin:21-jre-alpine
+
+WORKDIR /app
+
+ARG DIST=app-ui/build/install/app-ui
+COPY ${DIST}/lib lib/
+COPY ${DIST}/bin bin/
+
+EXPOSE 8081
+
+ENTRYPOINT ["bin/app-ui"]

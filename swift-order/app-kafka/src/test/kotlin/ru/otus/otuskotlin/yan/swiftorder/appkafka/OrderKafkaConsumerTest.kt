@@ -31,6 +31,7 @@ import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderUpdateObject
 import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderUpdateRequest
 import ru.otus.otuskotlin.yan.swiftorder.appcommon.AppSettings
 import ru.otus.otuskotlin.yan.swiftorder.appkafka.config.SwiftOrderTopicsProperties
+import ru.otus.otuskotlin.yan.swiftorder.biz.SwiftOrderProcessor
 import java.math.BigDecimal
 import java.time.Duration
 
@@ -42,7 +43,7 @@ class OrderKafkaConsumerTest {
     private val consumer = OrderKafkaConsumer(
         containerFactory = mock<ConcurrentKafkaListenerContainerFactory<String, String>>(),
         props = props,
-        appSettings = AppSettings(),
+        appSettings = AppSettings(processor = SwiftOrderProcessor()),
         objectMapper = objectMapper,
         producer = producer,
     )

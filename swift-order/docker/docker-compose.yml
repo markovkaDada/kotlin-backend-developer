@@ -33,3 +33,16 @@ services:
       - kafka
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+
+  swift-order-ui:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.ui
+    ports:
+      - "8081:8081"
+    depends_on:
+      - swift-order-spring
+      - kafka
+    environment:
+      BACKEND_URL: http://swift-order-spring:8080
+      KAFKA_BOOTSTRAP: kafka:29092

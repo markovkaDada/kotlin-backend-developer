@@ -13,10 +13,14 @@ pluginManagement {
 
 rootProject.name = "swift-order"
 
+includeBuild("../lib")
+
 include("api-v1")
 include("api-log")
 include("models")
 include("mappers")
+include("biz")
 include("app-common")
 include("app-spring")
 include("app-kafka")
+include("app-ui")

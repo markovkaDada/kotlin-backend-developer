@@ -1,6 +1,6 @@
 plugins {
     id("jvm-convention")
-    id("org.openapi.generator")
+    alias(libs.plugins.openapi.generator)
 }
 
 openApiGenerate {
@@ -41,9 +41,11 @@ tasks.compileKotlin {
 dependencies {
     constraints {
         implementation("org.jetbrains.kotlin:kotlin-reflect") {
-            version { require("2.2.21") }
-            because("jackson-module-kotlin pulls kotlin-reflect:1.7.22; align with project Kotlin version")
+            version { require(embeddedKotlinVersion) }
+            because("jackson-module-kotlin pulls old kotlin-reflect; align with project Kotlin version")
         }
     }
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.2")
+
+    // --- Libraries ---
+    implementation(libs.jackson.module.kotlin)
 }

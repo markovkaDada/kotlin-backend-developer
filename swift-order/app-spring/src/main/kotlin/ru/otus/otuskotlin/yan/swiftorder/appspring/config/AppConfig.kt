@@ -8,13 +8,14 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import ru.otus.otuskotlin.yan.swiftorder.appcommon.AppSettings
+import ru.otus.otuskotlin.yan.swiftorder.biz.SwiftOrderProcessor
 
 @Configuration
 class AppConfig {
 
     @Bean
     fun appSettings(): AppSettings {
-        return AppSettings()
+        return AppSettings(processor = SwiftOrderProcessor())
     }
 
     @Bean
