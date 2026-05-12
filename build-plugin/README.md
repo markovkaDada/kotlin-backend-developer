@@ -38,7 +38,7 @@ dependencies {
 }
 ```
 
-**Пример:** `swift-order/swift-order-api/build.gradle.kts`
+**Пример:** `swift-order/biz/build.gradle.kts`, `swift-order/models/build.gradle.kts`
 
 ### 2. multiplatform-convention
 
@@ -153,7 +153,7 @@ plugins {
 
 **Пример:**
 ```bash
-./gradlew :swift-order:swift-order-api:printJvmInfo
+./gradlew :swift-order:biz:printJvmInfo
 ```
 
 ## Преимущества

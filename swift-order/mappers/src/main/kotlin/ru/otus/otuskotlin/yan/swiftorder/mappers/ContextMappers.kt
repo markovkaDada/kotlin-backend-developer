@@ -12,18 +12,22 @@ import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderReadRequest
 import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderReadResponse
 import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderRequestDebugMode
 import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderRequestDebugStubs
+import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderSearchFilter
 import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderSearchRequest
 import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderSearchResponse
 import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderUpdateRequest
 import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.OrderUpdateResponse
 import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.ResponseResult
 import ru.otus.otuskotlin.yan.swiftorder.appcommon.Context
+import ru.otus.otuskotlin.yan.swiftorder.appcommon.repo.DbOrderFilterRequest
 import ru.otus.otuskotlin.yan.swiftorder.models.Command
 import ru.otus.otuskotlin.yan.swiftorder.models.ContextState
 import ru.otus.otuskotlin.yan.swiftorder.models.SOError
 import ru.otus.otuskotlin.yan.swiftorder.models.StubCase
 import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrder
 import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrderId
+import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrderStatus
+import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOwnerId
 import ru.otus.otuskotlin.yan.swiftorder.models.WorkMode
 
 // ---- Request → Context ----
@@ -69,6 +73,7 @@ fun Context.fromTransport(request: OrderSearchRequest) {
     command = Command.SEARCH
     workMode = request.debug.toWorkMode()
     stubCase = request.debug.toStubCase()
+    orderFilterRequest = request.orderFilter.toInternal()
 }
 
 // ---- Context → Response ----
@@ -133,6 +138,11 @@ fun SOError.toTransportError() = Error(
 )
 
 // ---- Debug helpers ----
+
+fun OrderSearchFilter?.toInternal(): DbOrderFilterRequest = DbOrderFilterRequest(
+    ownerIdFilter = SwiftOwnerId(this?.ownerId ?: ""),
+    statusFilter = this?.status?.toInternal() ?: SwiftOrderStatus.NONE,
+)
 
 fun OrderDebug?.toWorkMode(): WorkMode = when (this?.mode) {
     OrderRequestDebugMode.STUB -> WorkMode.STUB

@@ -11,8 +11,20 @@
 - `m1l1-first` - Первый урок
 
 ### 2. swift-order
-Персональный проект swift-order.
-- `swift-order-api` - Модуль-заглушка (пример структуры)
+Персональный проект swift-order — бэкенд для заказа вырезки деталей на ЧПУ.
+Модули:
+- `models` — доменные модели (`SwiftOrder`, `SwiftOrderStatus`, ...)
+- `api-v1` — DTO API v1 (генерация из OpenAPI)
+- `api-log` — DTO для лог-событий
+- `mappers` — преобразование API ↔ модель
+- `biz` — бизнес-логика (CoR-цепочки операций)
+- `app-common` — общие интерфейсы приложения (`Context`, `CorSettings`, `ISwiftOrderProcessor`)
+- `app-spring` — REST-приложение на Spring Boot
+- `app-kafka` — Kafka consumer/producer на Spring
+- `app-ui` — Ktor UI с переключением транспортов HTTP/Kafka
+- `repo-inmemory` — in-memory реализация репозитория
+- `repo-postgres` — Postgres-реализация на Exposed
+- `repo-tests` — общий набор тестов репозитория
 
 ### 3. build-plugin
 Общие Gradle плагины для переиспользования настроек сборки.
