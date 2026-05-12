@@ -1,5 +1,5 @@
 package ru.otus.otuskotlin.yan.swiftorder.models
 
 enum class SwiftOrderStatus {
-    NEW, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED
+    NONE, NEW, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED
 }

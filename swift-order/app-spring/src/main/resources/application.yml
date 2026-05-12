@@ -19,6 +19,15 @@ app:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 swift-order:
+  repo:
+    type: inmemory  # inmemory | postgres
+    config:
+      max-entries: 1000      # used when type=inmemory
+      host: localhost        # used when type=postgres
+      port: 5432
+      user: postgres
+      password: swift-order-pass
+      database: swift_order
   create-topics: true
   create-request-topic:
     name: swift-order-create-request
