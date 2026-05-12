@@ -8,6 +8,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import ru.otus.otuskotlin.yan.swiftorder.appui.client.OrderClient
 import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrder
+import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrderStatus
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -35,8 +36,7 @@ class TransportSwitchTest {
     }
 
     private fun stubClient(name: String) = object : OrderClient {
-        fun name() = name
-        override suspend fun search() = emptyList<SwiftOrder>()
+        override suspend fun search(ownerId: String, status: SwiftOrderStatus?) = emptyList<SwiftOrder>()
         override suspend fun read(id: String) = SwiftOrder()
         override suspend fun create(order: SwiftOrder) = SwiftOrder()
         override suspend fun update(order: SwiftOrder) = SwiftOrder()

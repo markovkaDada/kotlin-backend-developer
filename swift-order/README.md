@@ -49,38 +49,31 @@
 
 ## Сущности
 
-### Client
+### SwiftOrder
 
-| Поле      | Тип      | Описание                 |
-|-----------|----------|--------------------------|
-| id        | UUID     | Уникальный идентификатор |
-| name      | String   | Имя клиента              |
-| company   | String   | Название компании        |
-| email     | String   | Электронная почта        |
-| phone     | String   | Номер телефона           |
-| createdAt | DateTime | Дата создания            |
+Реальная модель из `models/.../SwiftOrder.kt`:
 
-### Order
+| Поле        | Тип               | Описание                                          |
+|-------------|-------------------|---------------------------------------------------|
+| id          | SwiftOrderId      | Уникальный идентификатор заказа                   |
+| description | String            | Описание заказа                                   |
+| amount      | BigDecimal        | Сумма заказа                                      |
+| status      | SwiftOrderStatus  | Текущий статус                                    |
+| ownerId     | SwiftOwnerId      | Идентификатор владельца (клиента)                 |
+| fileId      | SwiftFileId       | Идентификатор файла для резки во внешнем хранилище |
 
-| Поле        | Тип         | Описание                                      |
-|-------------|-------------|-----------------------------------------------|
-| id          | UUID        | Уникальный идентификатор                      |
-| clientId    | UUID        | Ссылка на клиента                             |
-| description | String      | Описание детали/заказа                        |
-| status      | OrderStatus | Текущий статус                                |
-| amount      | BigDecimal  | Сумма заказа                                  |
-| fileName    | String      | Имя загруженного файла (например, detail.dxf) |
-| fileData    | byte[]      | Содержимое файла для резки                    |
-| createdAt   | DateTime    | Дата создания                                 |
-| updatedAt   | DateTime    | Дата последнего обновления                    |
+`SwiftOrderId`, `SwiftOwnerId`, `SwiftFileId` — value-классы поверх строки (см. `SwiftId.kt`).
 
-### OrderStatus
+Отдельной сущности `Client` в MVP пока нет — клиент представлен только полем `ownerId` в заказе.
+
+### SwiftOrderStatus
 
 ```
 NEW → CONFIRMED → IN_PROGRESS → COMPLETED
                                → CANCELLED
 ```
 
+- **NONE** — статус не задан
 - **NEW** — заказ создан
 - **CONFIRMED** — заказ подтверждён
 - **IN_PROGRESS** — заказ выполняется
@@ -106,3 +99,37 @@ NEW → CONFIRMED → IN_PROGRESS → COMPLETED
 - Backend → Kafka: публикация событий смены статуса
 - Kafka → Notification Service: потребление событий
 - Notification Service → Заказчик: уведомления (email/push)
+
+## Запуск
+
+### Поднять весь стек в Docker
+
+Из корня репозитория `kotlin-backend-developer/`:
+
+```bash
+./gradlew :swift-order:app-spring:bootJar :swift-order:app-ui:installDist \
+  && cd swift-order/docker \
+  && docker-compose up --build
+```
+
+Команда делает три шага:
+1. `:swift-order:app-spring:bootJar` — собирает исполняемый Spring Boot jar бэкенда (`app-spring/build/libs/swift-order-app.jar`).
+2. `:swift-order:app-ui:installDist` — собирает дистрибутив Ktor-приложения UI (`app-ui/build/install/app-ui/`).
+3. `docker-compose up --build` — пересобирает Docker-образы (используют артефакты из шагов 1–2) и поднимает Zookeeper, Kafka, Postgres, бэкенд (8080) и UI (8081).
+
+После запуска UI доступен на <http://localhost:8081/orders>. Подробнее про порты и сервисы — [docker/README.md](docker/README.md).
+
+### Тесты
+
+```bash
+cd swift-order
+../gradlew check
+```
+
+`check` запускает все verification-таски (включая `test`) во всех модулях `swift-order`: `biz`, `app-spring`, `app-kafka`, `app-ui`, `mappers`, `repo-inmemory`, `repo-postgres` и т.д. Запускать из `swift-order/`, потому что это composite build — у корневого проекта своего `check` нет.
+
+Postgres-тесты требуют живого Docker. Чтобы прогнать всё, кроме них:
+
+```bash
+../gradlew check -x :repo-postgres:test
+```

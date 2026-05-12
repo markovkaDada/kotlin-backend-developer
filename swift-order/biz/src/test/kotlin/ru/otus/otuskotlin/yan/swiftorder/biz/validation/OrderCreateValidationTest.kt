@@ -2,8 +2,10 @@ package ru.otus.otuskotlin.yan.swiftorder.biz.validation
 
 import kotlinx.coroutines.runBlocking
 import ru.otus.otuskotlin.yan.swiftorder.appcommon.Context
+import ru.otus.otuskotlin.yan.swiftorder.appcommon.CorSettings
 import ru.otus.otuskotlin.yan.swiftorder.biz.SwiftOrderProcessor
 import ru.otus.otuskotlin.yan.swiftorder.models.Command
+import ru.otus.otuskotlin.yan.swiftorder.repoinmemory.SwiftOrderRepoInMemory
 import ru.otus.otuskotlin.yan.swiftorder.models.ContextState
 import ru.otus.otuskotlin.yan.swiftorder.models.StubCase
 import ru.otus.otuskotlin.yan.swiftorder.models.SwiftFileId
@@ -17,7 +19,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class OrderCreateValidationTest {
-    private val processor = SwiftOrderProcessor()
+    private val processor = SwiftOrderProcessor(corSettings = CorSettings(repo = SwiftOrderRepoInMemory()))
 
     private fun validCtx() = Context(
         command = Command.CREATE,

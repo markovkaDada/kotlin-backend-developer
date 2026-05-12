@@ -6,16 +6,17 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.*
 import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrder
+import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrderStatus
 
 class HttpOrderClient(
     private val baseUrl: String,
     private val httpClient: HttpClient,
 ) : OrderClient {
 
-    override suspend fun search(): List<SwiftOrder> {
+    override suspend fun search(ownerId: String, status: SwiftOrderStatus?): List<SwiftOrder> {
         val response = httpClient.post("$baseUrl/v1/order/search") {
             contentType(ContentType.Application.Json)
-            setBody(OrderSearchRequest())
+            setBody(toSearchRequest(ownerId, status))
         }.body<OrderSearchResponse>()
 
         if (response.result == ResponseResult.ERROR)

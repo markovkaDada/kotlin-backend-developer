@@ -306,6 +306,8 @@ components:
       type: object
       description: Фильтр поиска заказов
       properties:
+        ownerId:
+          type: string
         status:
           $ref: '#/components/schemas/OrderStatusDto'
 

@@ -31,8 +31,15 @@ services:
       - "8080:8080"
     depends_on:
       - kafka
+      - postgres
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      SWIFT_ORDER_REPO_TYPE: postgres
+      SWIFT_ORDER_REPO_CONFIG_HOST: postgres
+      SWIFT_ORDER_REPO_CONFIG_PORT: 5432
+      SWIFT_ORDER_REPO_CONFIG_USER: swiftorder
+      SWIFT_ORDER_REPO_CONFIG_PASSWORD: swiftorder
+      SWIFT_ORDER_REPO_CONFIG_DATABASE: swiftorder
 
   swift-order-ui:
     build:
@@ -46,3 +53,23 @@ services:
     environment:
       BACKEND_URL: http://swift-order-spring:8080
       KAFKA_BOOTSTRAP: kafka:29092
+
+  postgres:
+    image: postgres:17
+    platform: linux/amd64
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: swiftorder
+      POSTGRES_PASSWORD: swiftorder
+      POSTGRES_DB: swiftorder
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:v0.7.2
+    ports:
+      - "8082:8080"
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092

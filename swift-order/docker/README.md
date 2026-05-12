@@ -24,20 +24,24 @@
 Откройте **http://localhost:8081/orders** в браузере.  
 В шапке переключайтесь между транспортами **HTTP** и **Kafka**.
 
+## Dockerfile'ы
+
+| Файл               | Что собирает                  | Артефакт от Gradle                          |
+|--------------------|-------------------------------|---------------------------------------------|
+| `Dockerfile`       | Spring Boot бэкенд (app-spring) | `:swift-order:app-spring:bootJar`           |
+| `Dockerfile.ui`    | Ktor UI (app-ui)              | `:swift-order:app-ui:installDist`           |
+| `Dockerfile.kafka` | Kafka consumer (app-kafka)    | `:swift-order:app-kafka:bootJar`            |
+
 ## Сборка отдельных образов
 
 Команды запускать из корня `kotlin-backend-developer/`:
 
 ```bash
 # Spring Boot
+./gradlew :swift-order:app-spring:bootJar
 docker build -f swift-order/docker/Dockerfile -t swift-order:latest ./swift-order
 
 # Ktor UI
 ./gradlew :swift-order:app-ui:installDist
 docker build -f swift-order/docker/Dockerfile.ui -t swift-order-ui:latest ./swift-order
 ```
-
-
-./gradlew :swift-order:app-spring:bootJar :swift-order:app-ui:installDist \   
-&& cd swift-order/docker \                                                  
-&& docker-compose up --build

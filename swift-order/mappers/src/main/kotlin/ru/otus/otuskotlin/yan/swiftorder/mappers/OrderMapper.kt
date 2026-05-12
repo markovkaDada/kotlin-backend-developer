@@ -43,11 +43,12 @@ fun OrderStatusDto.toInternal(): SwiftOrderStatus = when (this) {
 // ---- Internal → Transport ----
 
 fun SwiftOrderStatus.toTransport(): OrderStatusDto = when (this) {
-    SwiftOrderStatus.NEW -> OrderStatusDto.NEW
-    SwiftOrderStatus.CONFIRMED -> OrderStatusDto.CONFIRMED
+    SwiftOrderStatus.NONE        -> OrderStatusDto.NEW
+    SwiftOrderStatus.NEW         -> OrderStatusDto.NEW
+    SwiftOrderStatus.CONFIRMED   -> OrderStatusDto.CONFIRMED
     SwiftOrderStatus.IN_PROGRESS -> OrderStatusDto.IN_PROGRESS
-    SwiftOrderStatus.COMPLETED -> OrderStatusDto.COMPLETED
-    SwiftOrderStatus.CANCELLED -> OrderStatusDto.CANCELLED
+    SwiftOrderStatus.COMPLETED   -> OrderStatusDto.COMPLETED
+    SwiftOrderStatus.CANCELLED   -> OrderStatusDto.CANCELLED
 }
 
 fun SwiftOrder.toResponseObject(): OrderResponseObject = OrderResponseObject(

@@ -15,13 +15,16 @@ fun Application.orderRoutes(httpClient: OrderClient, kafkaClient: OrderClient) {
 
         get("/orders") {
             val t = call.request.queryParameters["transport"] ?: "http"
+            val ownerId = call.request.queryParameters["ownerId"] ?: ""
+            val statusParam = call.request.queryParameters["status"]
+            val status = statusParam?.runCatching { SwiftOrderStatus.valueOf(this) }?.getOrNull()
             val client = call.orderClient(httpClient, kafkaClient)
-            runCatching { client.search() }.fold(
+            runCatching { client.search(ownerId = ownerId, status = status) }.fold(
                 onSuccess = { orders ->
-                    call.respondHtml { layout("Заказы", t) { orderListPage(orders, t) } }
+                    call.respondHtml { layout("Заказы", t) { orderListPage(orders, t, ownerId, statusParam ?: "") } }
                 },
                 onFailure = { e ->
-                    call.respondHtml { layout("Заказы", t, e.message) { orderListPage(emptyList(), t) } }
+                    call.respondHtml { layout("Заказы", t, e.message) { orderListPage(emptyList(), t, ownerId, statusParam ?: "") } }
                 }
             )
         }
