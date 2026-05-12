@@ -11,13 +11,24 @@ import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrder
 import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrderId
 import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOwnerId
 import ru.otus.otuskotlin.yan.swiftorder.models.WorkMode
+import ru.otus.otuskotlin.yan.swiftorder.repoinmemory.SwiftOrderRepoInMemory
 import java.math.BigDecimal
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class OrderUpdateValidationTest {
-    private val processor = SwiftOrderProcessor()
+    private val processor = SwiftOrderProcessor(
+        repo = SwiftOrderRepoInMemory(initOrders = listOf(
+            SwiftOrder(
+                id = SwiftOrderId("existing-id"),
+                description = "Existing order",
+                amount = BigDecimal("100.00"),
+                ownerId = SwiftOwnerId("owner-1"),
+                fileId = SwiftFileId("file-1"),
+            )
+        ))
+    )
 
     private fun validCtx() = Context(
         command = Command.UPDATE,

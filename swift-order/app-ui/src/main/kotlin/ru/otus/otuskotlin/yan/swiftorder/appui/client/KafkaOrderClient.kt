@@ -11,10 +11,12 @@ import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
 import ru.otus.otuskotlin.yan.swiftorder.api.v1.models.*
 import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrder
+import ru.otus.otuskotlin.yan.swiftorder.models.SwiftOrderStatus
 import java.io.Closeable
 import java.time.Duration
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.time.Duration.Companion.milliseconds
 
 class KafkaOrderClient(
     private val bootstrapServers: String,
@@ -72,15 +74,15 @@ class KafkaOrderClient(
         producer.send(record)
 
         return try {
-            withTimeout(5_000) { deferred.await() }
+            withTimeout(5_000.milliseconds) { deferred.await() }
         } catch (e: TimeoutCancellationException) {
             pendingRequests.remove(correlationId)
             throw OrderClientException("Kafka timeout after 5s for topic $requestTopic", e)
         }
     }
 
-    override suspend fun search(): List<SwiftOrder> {
-        val json = sendAndReceive("swift-order-search-request", OrderSearchRequest())
+    override suspend fun search(ownerId: String, status: SwiftOrderStatus?): List<SwiftOrder> {
+        val json = sendAndReceive("swift-order-search-request", toSearchRequest(ownerId, status))
         val response = objectMapper.readValue(json, OrderSearchResponse::class.java)
         if (response.result == ResponseResult.ERROR)
             throw OrderClientException(response.errors?.firstOrNull()?.message ?: "Search failed")

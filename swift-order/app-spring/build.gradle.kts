@@ -12,6 +12,8 @@ dependencies {
     implementation(project(":api-v1"))
     implementation(project(":mappers"))
     implementation(project(":biz"))
+    implementation(project(":repo-inmemory"))
+    implementation(project(":repo-postgres"))
 
     // --- Spring ---
     implementation(libs.spring.boot.starter.web)

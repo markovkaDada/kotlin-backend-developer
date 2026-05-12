@@ -12,4 +12,6 @@ dependencies {
 
     // --- Test ---
     testImplementation(libs.kotlinx.coroutines.core)
+    testImplementation(project(":repo-inmemory"))
+    testImplementation(project(":repo-tests"))
 }
